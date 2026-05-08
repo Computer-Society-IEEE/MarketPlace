@@ -1,0 +1,8 @@
+// Índices recomendados en MongoDB
+
+// db.ofertas.createIndex({ uuid_vendedor: 1 })
+// db.ofertas.createIndex({ tipo_oferta: 1, activo: 1 })
+// db.ofertas.createIndex({ "producto.categoria": 1 })
+// db.ofertas.createIndex({ "servicio.categoria": 1 })
+// db.ofertas.createIndex({ tags: 1 })
+// db.ofertas.createIndex({ nombre: "text", descripcion: "text" }) // Búsqueda full-text
