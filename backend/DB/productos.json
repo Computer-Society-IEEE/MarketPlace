@@ -1,0 +1,129 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "title": "Oferta",
+    "required": ["uuid_vendedor", "tipo_oferta", "nombre", "precio", "activo", "fecha_publicacion"],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId",
+        "description": "ID único generado por MongoDB"
+      },
+      "uuid_vendedor": {
+        "bsonType": "string",
+        "description": "UUID del vendedor en Firebase/PostgreSQL"
+      },
+      "tipo_oferta": {
+        "bsonType": "string",
+        "enum": ["producto", "servicio"],
+        "description": "Indica si la oferta es un producto o un servicio"
+      },
+      "nombre": {
+        "bsonType": "string",
+        "minLength": 3,
+        "maxLength": 150,
+        "description": "Nombre de la oferta"
+      },
+      "descripcion": {
+        "bsonType": "string",
+        "maxLength": 1000,
+        "description": "Descripción detallada de la oferta"
+      },
+      "precio": {
+        "bsonType": "double",
+        "minimum": 0,
+        "description": "Precio en pesos colombianos"
+      },
+      "activo": {
+        "bsonType": "bool",
+        "description": "Indica si la oferta está visible en el marketplace"
+      },
+      "fecha_publicacion": {
+        "bsonType": "date",
+        "description": "Fecha en que se publicó la oferta"
+      },
+      "producto": {
+        "bsonType": "object",
+        "description": "Datos específicos cuando tipo_oferta es 'producto'",
+        "required": ["stock", "condicion", "categoria"],
+        "properties": {
+          "stock": {
+            "bsonType": "int",
+            "minimum": 0,
+            "description": "Unidades disponibles"
+          },
+          "condicion": {
+            "bsonType": "string",
+            "enum": ["nuevo", "usado"],
+            "description": "Estado físico del producto"
+          },
+          "categoria": {
+            "bsonType": "string",
+            "description": "Categoría del producto (ej: Electrónica, Libros)"
+          },
+          "imagenes": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "string",
+              "description": "URL de la imagen"
+            },
+            "description": "Lista de URLs de imágenes del producto"
+          }
+        }
+      },
+      "servicio": {
+        "bsonType": "object",
+        "description": "Datos específicos cuando tipo_oferta es 'servicio'",
+        "required": ["modalidad", "categoria"],
+        "properties": {
+          "modalidad": {
+            "bsonType": "string",
+            "enum": ["virtual", "presencial", "ambas"],
+            "description": "Cómo se presta el servicio"
+          },
+          "disponibilidad": {
+            "bsonType": "array",
+            "description": "Horarios disponibles",
+            "items": {
+              "bsonType": "object",
+              "required": ["dia", "hora_inicio", "hora_fin"],
+              "properties": {
+                "dia": {
+                  "bsonType": "string",
+                  "enum": ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+                },
+                "hora_inicio": {
+                  "bsonType": "string",
+                  "description": "Hora en formato HH:MM"
+                },
+                "hora_fin": {
+                  "bsonType": "string",
+                  "description": "Hora en formato HH:MM"
+                }
+              }
+            }
+          },
+          "duracion_sesion_min": {
+            "bsonType": "int",
+            "minimum": 15,
+            "description": "Duración de cada sesión en minutos"
+          },
+          "categoria": {
+            "bsonType": "string",
+            "description": "Categoría del servicio (ej: Tutorías, Diseño)"
+          }
+        }
+      },
+      "tags": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "string"
+        },
+        "description": "Palabras clave para búsqueda"
+      },
+      "ubicacion_facultad": {
+        "bsonType": "string",
+        "description": "Facultad o sede donde se ofrece"
+      }
+    }
+  }
+}
