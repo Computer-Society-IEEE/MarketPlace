@@ -1,10 +1,10 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { HapticTab } from '@/frontend/components/haptic-tab';
-import { IconSymbol } from '@/frontend/components/ui/icon-symbol';
-import { Colors } from '@/frontend/constants/theme';
-import { useColorScheme } from '@/frontend/hooks/use-color-scheme';
+import { HapticTab } from '@/components/haptic-tab';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -17,17 +17,47 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
-        name="index"
+        name="hubcomprador"
         options={{
-          title: 'Home',
+          title: 'Hub',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="test"
+        name="gestorPerfil"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="historialComprador"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="BuscarProducto"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="Editar_perfil"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="Perfil_vendedor"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="Perfil_comprador"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

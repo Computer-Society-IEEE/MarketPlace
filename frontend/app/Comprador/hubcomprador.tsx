@@ -4,8 +4,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 const botones = [
-  { label: 'Buscar',          icon: 'search', ruta: '/(tabs)/BuscarProducto'},
-  { label: 'Historial',       icon: 'cart',   ruta: '/(tabs)/historialComprador'},
+  { label: 'Buscar',          icon: 'search', ruta: '/Comprador/BuscarProducto' },
+  { label: 'Historial',       icon: 'cart',   ruta: '/Comprador/historialComprador' },
   { label: 'Tiendas físicas', icon: 'map',    ruta: '/tiendas-fisicas'       },
   { label: 'Deseo Vender',    icon: null,     ruta: '/deseo-vender'          },
 ];
