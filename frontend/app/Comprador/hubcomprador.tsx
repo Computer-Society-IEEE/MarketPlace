@@ -1,13 +1,18 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { styles, COLOR_LIGHT } from '../../constants/Styles';
+import { View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import { router } from 'expo-router';
+import { TEXT } from '../../constants/plantilla';
 import { Ionicons } from '@expo/vector-icons';
+import { styles} from '../../constants/Styles';
+import Header from '../../components/Header';
+import { UserRow } from '../../components/UserRow';
+import { SectionTitle } from '../../components/SectionTitle';
+
 
 const botones = [
-  { label: 'Buscar',          icon: 'search', ruta: '/(tabs)/BuscarProducto'},
-  { label: 'Historial',       icon: 'cart',   ruta: '/(tabs)/historialComprador'},
-  { label: 'Tiendas físicas', icon: 'map',    ruta: '/tiendas-fisicas'       },
-  { label: 'Deseo Vender',    icon: null,     ruta: '/deseo-vender'          },
+  { label: 'Buscar',          icon: 'search', ruta: '/Comprador/BuscarProducto' },
+  { label: 'Historial',       icon: 'cart',   ruta: '/Comprador/historialComprador' },
+  { label: 'Tiendas físicas', icon: 'map',    ruta: '/Comprador/selectorSede' },
+  { label: 'Deseo Vender',    icon: null,     ruta: '/deseo-vender' },
 ];
 
 const vendedores = ['User', 'User', 'User'];
@@ -16,11 +21,8 @@ export default function HubComprador() {
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={localStyles.colorBlock} />
-        <View style={{ flex: 1 }} />
-      </View>
 
+      <Header showBack={false} />
       {/* Grid de botones */}
       <View style={styles.grid}>
         {botones.map((btn) => (
@@ -30,7 +32,7 @@ export default function HubComprador() {
             onPress={() => router.push(btn.ruta as any)}
           >
             {btn.icon && (
-              <Ionicons name={btn.icon as any} size={36} color="white" />
+              <Ionicons name={btn.icon as any} size={36} color={TEXT.onBrand} />
             )}
             <Text style={styles.botonTexto}>{btn.label}</Text>
           </TouchableOpacity>
@@ -38,21 +40,10 @@ export default function HubComprador() {
       </View>
 
       {/* Vendedores destacados */}
-      <Text style={styles.seccionTitulo}>Vendedores destacados</Text>
+      <SectionTitle>Vendedores destacados</SectionTitle>
       {vendedores.map((v, i) => (
-        <View key={i} style={styles.vendedorRow}>
-          <View style={styles.avatar} />
-          <Text style={styles.vendedorNombre}>{v}</Text>
-        </View>
+        <UserRow key={i} name={v} style={styles.vendedorRow} />
       ))}
     </ScrollView>
   );
 }
-
-const localStyles = StyleSheet.create({
-  colorBlock: {
-    width: 50,
-    height: '100%',
-    backgroundColor: COLOR_LIGHT,
-  },
-});

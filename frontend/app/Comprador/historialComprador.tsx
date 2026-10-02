@@ -1,8 +1,10 @@
 // app/(tabs)/historial.tsx
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { styles, COLOR, COLOR_LIGHT } from '../../constants/Styles';
+import { styles } from '../../constants/Styles';
+import { BRAND, SPACING, RADIUS, TEXT, SURFACE } from '../../constants/plantilla';
+import Header from '../../components/Header';
+import { UserRow } from '../../components/UserRow';
 
 const historial = [
   { nombre: 'User', descripcion: 'Descripcion del producto' },
@@ -14,13 +16,7 @@ export default function Historial() {
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={localStyles.colorBlock} />
-        <Text style={localStyles.headerTitulo}>historial</Text>
-        <TouchableOpacity onPress={() => router.back()} style={localStyles.backBtn}>
-          <Ionicons name="return-up-back-outline" size={28} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header title="historial" />
 
       {/* Lista de productos */}
       <View style={localStyles.lista}>
@@ -28,14 +24,11 @@ export default function Historial() {
           <View key={i} style={localStyles.card}>
             {/* Botón eliminar */}
             <TouchableOpacity style={localStyles.deleteBtn}>
-              <Ionicons name="close-circle" size={24} color={COLOR} />
+              <Ionicons name="close-circle" size={24} color={BRAND.main} />
             </TouchableOpacity>
 
             {/* Fila usuario */}
-            <View style={localStyles.usuarioRow}>
-              <View style={styles.avatar} />
-              <Text style={localStyles.usuarioNombre}>{item.nombre}</Text>
-            </View>
+            <UserRow name={item.nombre} />
 
             {/* Descripción */}
             <View style={localStyles.descripcionBox}>
@@ -49,30 +42,14 @@ export default function Historial() {
 }
 
 const localStyles = StyleSheet.create({
-  colorBlock: {
-    width: 50,
-    height: '100%',
-    backgroundColor: COLOR_LIGHT,
-  },
-  headerTitulo: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: '600',
-    color: 'white',
-  },
-  backBtn: {
-    padding: 12,
-    marginRight: 8,
-  },
   lista: {
-    padding: 16,
-    gap: 16,
+    padding: SPACING.lg,
+    gap: SPACING.lg,
   },
   card: {
-    backgroundColor: '#e0e0e0',
-    borderRadius: 16,
-    padding: 12,
+    backgroundColor: SURFACE.card,
+    borderRadius: RADIUS.lg,
+    padding:  SPACING.md,
     gap: 10,
     position: 'relative',
   },
@@ -82,27 +59,17 @@ const localStyles = StyleSheet.create({
     right: -10,
     zIndex: 1,
   },
-  usuarioRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  usuarioNombre: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#333',
-  },
   descripcionBox: {
     backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: RADIUS.sm,
+    padding: SPACING.md,
     minHeight: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
   descripcionTexto: {
     fontSize: 14,
-    color: '#666',
+    color: TEXT.secondary,
     fontStyle: 'italic',
     textAlign: 'center',
   },

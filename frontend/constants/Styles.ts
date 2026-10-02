@@ -1,54 +1,63 @@
 import { StyleSheet } from 'react-native';
-
-export const COLOR = '#b85555';
-export const COLOR_LIGHT = '#c97070'; // ← agregamos esta
+import { BRAND, SPACING, RADIUS, TEXT, SURFACE, AVATAR } from './plantilla';
+export const COLOR = BRAND.main;
+export const COLOR_LIGHT = BRAND.light; // ← agregamos esta
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: SURFACE.screen,
   },
-  // Header (fusionado en uno solo)
+  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLOR,
     paddingTop: 50,
-    paddingBottom: 12,
-    paddingHorizontal: 0,
+    paddingBottom: SPACING.md,
   },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  menuBtn: {
+  colorBlock: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 50,
     backgroundColor: COLOR_LIGHT,
-    padding: 10,
-    marginLeft: 0,
   },
-  barra: {
+  //si no hay menu
+  leftSlot: {
+    width: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
     flex: 1,
-    backgroundColor: COLOR,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: TEXT.onBrand,
+  },
+  iconBtn: {
+    padding: 12,
   },
   // Grid de botones
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 12,
-    gap: 12,
+    padding: SPACING.md,
+    gap: SPACING.md,
   },
   boton: {
     backgroundColor: COLOR,
     width: '46%',
     aspectRatio: 1,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: SPACING.sm,
   },
   botonTexto: {
-    color: 'white',
+    color: TEXT.onBrand,
     fontWeight: '600',
     textAlign: 'center',
     fontSize: 13,
@@ -57,25 +66,26 @@ export const styles = StyleSheet.create({
   seccionTitulo: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginLeft: 16,
-    marginTop: 8,
-    marginBottom: 12,
+    color: TEXT.primary,
+    marginLeft: SPACING.lg,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   vendedorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: 10,
-    gap: 12,
+    gap: SPACING.md,
   },
   avatar: {
-    width: 40,
-    height: 40,
+    width: AVATAR.sm,
+    height: AVATAR.sm,
     borderRadius: 20,
-    backgroundColor: '#ccc',
+    backgroundColor: SURFACE.avatar,
   },
   vendedorNombre: {
     fontSize: 15,
-    color: '#333',
+    color: TEXT.primary,
   },
 });

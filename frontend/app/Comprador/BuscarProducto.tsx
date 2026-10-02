@@ -1,7 +1,10 @@
 import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { styles as globalStyles, COLOR, COLOR_LIGHT } from '../../constants/Styles';
+import Header from '../../components/Header';
+import { UserRow } from '../../components/UserRow';
+import { SectionTitle } from '../../components/SectionTitle';
+import { SPACING, RADIUS, SURFACE, TEXT, AVATAR } from '../../constants/plantilla';
 
 const productos = ['User', 'User', 'User', 'User', 'User', 'User'];
 
@@ -9,13 +12,7 @@ export default function Buscar() {
   return (
     <ScrollView style={localStyles.container}>
       {/* Header */}
-      <View style={globalStyles.header}>
-        <View style={localStyles.colorBlock} />
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity onPress={() => router.back()} style={localStyles.backBtn}>
-          <Ionicons name="return-up-back-outline" size={28} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header />
 
       {/* Título */}
       <Text style={localStyles.titulo}>lista de productos</Text>
@@ -25,18 +22,25 @@ export default function Buscar() {
         <TextInput
           style={localStyles.searchInput}
           placeholder='buscar "hojas examen"'
-          placeholderTextColor="#999"
+          placeholderTextColor={TEXT.muted}
         />
-        <Ionicons name="search" size={20} color="#999" style={localStyles.searchIcon} />
+        <Ionicons name="search" size={20} color={TEXT.muted} style={localStyles.searchIcon} />
       </View>
 
       {/* Lista */}
-      <Text style={localStyles.seccionTitulo}>productos destacados</Text>
+      <SectionTitle>productos destacados</SectionTitle>
       {productos.map((p, i) => (
-        <View key={i} style={localStyles.productoRow}>
-          <View style={localStyles.avatar} />
-          <Text style={localStyles.productoNombre}>{p}</Text>
-        </View>
+        <TouchableOpacity
+          key={i}
+          onPress={() =>
+            router.push({
+              pathname: '/Comprador/detalleProducto',
+              params: { usuario: p, producto: 'Nombre del producto' },
+            })
+          }
+        >
+          <UserRow name={p} size={AVATAR.md} style={localStyles.item} />
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
@@ -45,20 +49,11 @@ export default function Buscar() {
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  colorBlock: {
-    width: 50,
-    height: '100%',
-    backgroundColor: COLOR_LIGHT,
-  },
-  backBtn: {
-    padding: 12,
-    marginRight: 8,
+    backgroundColor: SURFACE.screen,
   },
   titulo: {
     fontSize: 13,
-    color: '#999',
+    color: TEXT.muted,
     marginLeft: 16,
     marginTop: 16,
     marginBottom: 8,
@@ -66,43 +61,23 @@ const localStyles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e8e8e8',
-    borderRadius: 20,
-    marginHorizontal: 16,
-    marginVertical: 12,
-    paddingHorizontal: 16,
+    backgroundColor: SURFACE.input,
+    borderRadius: RADIUS.pill,
+    marginHorizontal: SPACING.lg,
+    marginVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
   },
   searchInput: {
     flex: 1,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#333',
+    color: TEXT.primary,
   },
   searchIcon: {
-    marginLeft: 8,
+    marginLeft: SPACING.sm,
   },
-  seccionTitulo: {
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginVertical: 12,
-    color: '#333',
-  },
-  productoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  avatar: {
-    width: 45,
-    height: 45,
-    borderRadius: 22,
-    backgroundColor: '#ccc',
-  },
-  productoNombre: {
-    fontSize: 15,
-    color: '#333',
+  item: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
   },
 });
