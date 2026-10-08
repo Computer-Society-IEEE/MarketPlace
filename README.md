@@ -196,15 +196,3 @@ docker-compose up --build
 
 ---
 
-## 👥 Equipo
-
-Proyecto desarrollado por **IEEE CS UD 2026**
-
-| Integrante         | Rol                                              |
-| ------------------ | ------------------------------------------------ |
-| Juan Gonzalez      | Presidente del capítulo / coordinación           |
-| Javier Alvarez     | Diseño (mockup) y propuesta de monetización      |
-| Laura Alvarez      | Frontend (React + Expo) e integración del mockup |
-| Pablo Gomez        | Base de datos y backend                          |
-| Gabriela Navarro   | Entorno 3D — código del piso 1                   |
-| Cristian Salamanca | Entorno 3D — modelos de usuarios y puestos       |
