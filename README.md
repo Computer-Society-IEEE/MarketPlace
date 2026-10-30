@@ -169,7 +169,7 @@ Para abrir en dispositivo físico descarga **Expo Go** y escanea el QR que apare
 ### Tecnologías
 
 - Node.js + TypeScript
-- NestJS
+- Express.js
 - PostgreSQL
 - JWT para autenticación
 - ORM Prisma
