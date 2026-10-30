@@ -78,22 +78,79 @@ PostgreSQL
 
 ### Estructura de carpetas
 
+`app/` contiene solo las rutas (Expo Router), agrupadas por rol y delgadas. La lógica vive en `features/`, organizada por módulo y compartida entre roles.
+
 ```
 frontend/
 ├── app/
-│   ├── _layout.tsx       # Layout raíz
-│   ├── Auth/             # Login, registro
-│   ├── Comprador/        # Hub, búsqueda, historial
-│   ├── Vendedor/         # Hub vendedor, mis productos
-│   └── Admin/            # Dashboard de administración
-├── world3d/              # Entorno 3D del campus (escenas, modelos GLB, controles)
-├── components/           # Componentes reutilizables
-├── constants/            # Estilos globales, colores
-├── hooks/                # Custom hooks
-├── services/             # Llamadas a la API
-├── store/                # Estado global
-└── utils/                # Funciones utilitarias
+│   ├── _layout.tsx            # Layout raíz: Stack + guard de sesión y modo activo
+│   ├── index.tsx              # Redirige según sesión y modo
+│   ├── (onboarding)/          # Bienvenida
+│   ├── (auth)/                # Login, registro, verificación, recuperar contraseña
+│   ├── (comun)/               # Pantallas compartidas entre roles
+│   │   ├── mensajes/          # Lista de chats y chat [id]
+│   │   ├── notificaciones.tsx
+│   │   ├── cuenta/            # Perfil, ajustes, políticas, eliminar cuenta
+│   │   ├── ayuda/             # Ayuda, artículos, PQRS
+│   │   ├── vendedor/[id].tsx  # Perfil público del vendedor y reseñas
+│   │   └── reportar.tsx
+│   ├── (comprador)/
+│   │   ├── _layout.tsx        # Navegación del comprador
+│   │   ├── index.tsx          # Inicio
+│   │   ├── buscar/            # Búsqueda, resultados, filtros
+│   │   ├── producto/[id].tsx
+│   │   ├── carrito.tsx
+│   │   ├── checkout.tsx
+│   │   ├── pedidos/           # Historial y seguimiento [id]
+│   │   └── favoritos.tsx
+│   ├── (vendedor)/
+│   │   ├── _layout.tsx
+│   │   ├── index.tsx          # Hub vendedor
+│   │   ├── productos/         # Mis productos, nuevo, [id]/editar
+│   │   └── ventas/            # Ventas y confirmación
+│   ├── (anunciante)/          # Fase posterior: pauta
+│   │   ├── _layout.tsx
+│   │   ├── campanas/          # Crear, pagar, activa, vencida
+│   │   └── resultados.tsx
+│   └── (admin)/
+│       ├── _layout.tsx
+│       ├── index.tsx          # Tablero y métricas
+│       ├── moderacion/
+│       ├── usuarios/
+│       ├── anunciantes/       # Fase posterior
+│       ├── pqrs/
+│       └── instituciones/     # Fase posterior
+├── features/                  # Lógica por módulo (components, hooks, services, store)
+│   ├── auth/
+│   ├── cuenta/
+│   ├── sedes/                 # Sedes de la UD (instituciones, a futuro)
+│   ├── tiendas/
+│   ├── productos/             # Catálogo, publicar y editar (vistas de comprador y vendedor)
+│   ├── pedidos/               # Carrito, checkout, cupones, seguimiento, historial
+│   ├── chat/
+│   ├── resenas/               # Calificaciones y reputación
+│   ├── moderacion/            # Reportes y moderación
+│   ├── soporte/               # Ayuda y PQRS
+│   ├── notificaciones/
+│   ├── publicidad/            # Pauta y campañas (fase posterior)
+│   ├── admin/                 # Tablero, métricas, pronóstico
+│   └── world3d/               # Archivos de Three.js por sede
+│       └── ingenieria/
+│           ├── piso1.js
+│           └── piso2.js
+├── components/                # Solo UI genérica (Button, Card, Input, estados vacío/error/carga)
+├── constants/                 # Tokens de diseño (colores, tipografía) tomados del mockup verde
+├── services/                  # Cliente HTTP base
+└── utils/
 ```
+
+Reglas:
+
+- Una pantalla en `app/` importa de `features/`, nunca al revés.
+- Un `feature` no importa de otro `feature`; lo compartido sube a `components/` o `utils/`.
+- Un componente que usa un solo módulo se queda en ese módulo.
+- Las variantes por rol dentro de un módulo se separan en subcarpetas (`productos/components/comprador/`, `productos/components/vendedor/`).
+- Las variantes de una misma pantalla (por ejemplo cada sede) son una ruta dinámica, no archivos duplicados.
 
 ### Instalación y arranque
 
@@ -143,7 +200,7 @@ npm run dev
 
 Recreación virtual del campus en 3D. La universidad cuenta con **2 pisos** donde está autorizada la venta; el desarrollo inicia con el **piso 1**.
 
-- Vive **dentro de la app Expo** (`frontend/world3d/`) y se abre desde la sección de Tiendas físicas.
+- Vive **dentro de la app Expo** (`frontend/features/world3d/`) y se abre desde la sección de Tiendas físicas.
 - Se construye con `react-three-fiber` para que corra en móvil desde el inicio; se debe probar en un dispositivo real desde la primera semana (rendimiento y carga de GLB).
 - Mantener los modelos livianos (pocos polígonos y texturas pequeñas).- Los modelos (usuarios, puestos, escenario) se exportan en formato **glTF/GLB**.
 - Cada puesto 3D tiene un **ID** que debe coincidir con el registro del puesto/emprendimiento en la base de datos.
@@ -196,3 +253,15 @@ docker-compose up --build
 
 ---
 
+## 👥 Equipo
+
+Proyecto desarrollado por **IEEE CS UD 2026**
+
+| Integrante         | Rol                                              |
+| ------------------ | ------------------------------------------------ |
+| Juan Gonzalez      | Presidente del capítulo / coordinación           |
+| Javier Alvarez     | Diseño (mockup) y propuesta de monetización      |
+| Laura Alvarez      | Frontend (React + Expo) e integración del mockup |
+| Pablo Gomez        | Base de datos y backend                          |
+| Gabriela Navarro   | Entorno 3D — código del piso 1                   |
+| Cristian Salamanca | Entorno 3D — modelos de usuarios y puestos       |
