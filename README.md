@@ -173,6 +173,7 @@ Para abrir en dispositivo físico descarga **Expo Go** y escanea el QR que apare
 - PostgreSQL
 - JWT para autenticación
 - ORM Prisma
+- API rest
 - Cloudinary para almacenamiento de imágenes
 
 ### Estructura de carpetas (objetivo)
