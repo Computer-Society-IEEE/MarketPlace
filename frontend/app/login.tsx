@@ -146,9 +146,7 @@ export default function Login() {
           <Text style={s.textoPie}>¿Aún no tienes cuenta?</Text>
           <Pressable
             accessibilityRole="link"
-            onPress={() => {
-              // TODO: ir a crear cuenta
-            }}
+            onPress={() => router.push('/registro' as any)}
             style={s.areaToque}
           >
             <Text style={s.enlace}>Crear cuenta</Text>

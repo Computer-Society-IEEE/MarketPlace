@@ -126,7 +126,7 @@ export default function intro() {
           {isLast && (
             <Pressable onPress={goLogin} accessibilityRole="link" hitSlop={8}>
               <ThemedText type="link" style={styles.link}>
-                Ya tengo cuenta
+                Ya tengo cuenta, ingresar
               </ThemedText>
             </Pressable>
           )}
