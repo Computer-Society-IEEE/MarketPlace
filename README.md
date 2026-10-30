@@ -172,6 +172,7 @@ Para abrir en dispositivo físico descarga **Expo Go** y escanea el QR que apare
 - NestJS
 - PostgreSQL
 - JWT para autenticación
+- ORM Prisma
 - Cloudinary para almacenamiento de imágenes
 
 ### Estructura de carpetas (objetivo)
@@ -242,6 +243,7 @@ Recreación virtual del campus en 3D. La universidad cuenta con **2 pisos** dond
 - Mensajes de commit con prefijo: `feat:`, `fix:`, `docs:`, `chore:`.
 - En el PR, referenciar la issue correspondiente (`Closes #número`).
 - Para recibir acceso al repo, enviar tu usuario de GitHub a la presidencia del capítulo.
+- Uso de Camel Case para cada variable
 
 ---
 
