@@ -1,81 +1,38 @@
 import { StyleSheet } from 'react-native';
+import { Palette, Radius, Type, TouchMin } from './theme';
 
-export const COLOR = '#b85555';
-export const COLOR_LIGHT = '#c97070'; // ← agregamos esta
+export const COLOR = Palette.ink;
+export const COLOR_LIGHT = Palette.lima;
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  // Header (fusionado en uno solo)
+  container: { flex: 1, backgroundColor: Palette.ground },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLOR,
-    paddingTop: 50,
-    paddingBottom: 12,
-    paddingHorizontal: 0,
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: Palette.ink,
+    borderBottomLeftRadius: Radius.xl, borderBottomRightRadius: Radius.xl,
+    paddingTop: 52, paddingBottom: 20, paddingHorizontal: 20,
   },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
+  headerText: { ...Type.title3, color: Palette.card },
+  iconBtn: {
+    width: TouchMin, height: TouchMin, borderRadius: Radius.full,
+    backgroundColor: 'rgba(253, 252, 249, 0.14)',
+    alignItems: 'center', justifyContent: 'center',
   },
-  menuBtn: {
-    backgroundColor: COLOR_LIGHT,
-    padding: 10,
-    marginLeft: 0,
-  },
-  barra: {
-    flex: 1,
-    backgroundColor: COLOR,
-  },
-  // Grid de botones
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 12,
-    gap: 12,
-  },
+  menuBtn: { /* igual que iconBtn */ },
+  barra: { flex: 1 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', padding: 20, gap: 12 },
   boton: {
-    backgroundColor: COLOR,
-    width: '46%',
-    aspectRatio: 1,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
+    backgroundColor: Palette.card, borderWidth: 1, borderColor: Palette.line,
+    width: '47%', aspectRatio: 1, borderRadius: Radius.lg,
+    justifyContent: 'center', alignItems: 'center', gap: 12,
   },
-  botonTexto: {
-    color: 'white',
-    fontWeight: '600',
-    textAlign: 'center',
-    fontSize: 13,
+  botonIcono: {
+    width: 64, height: 64, borderRadius: Radius.full,
+    backgroundColor: Palette.lima, alignItems: 'center', justifyContent: 'center',
   },
-  // Vendedores
-  seccionTitulo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  vendedorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 12,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#ccc',
-  },
-  vendedorNombre: {
-    fontSize: 15,
-    color: '#333',
-  },
+  botonTexto: { ...Type.bodySm, fontFamily: Type.label.fontFamily, color: Palette.ink, textAlign: 'center' },
+  seccionTitulo: { ...Type.title3, color: Palette.ink, marginLeft: 20, marginTop: 8, marginBottom: 12 },
+  vendedorRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10, gap: 12 },
+  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: Palette.line },
+  vendedorNombre: { ...Type.body, color: Palette.ink },
 });
