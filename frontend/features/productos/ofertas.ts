@@ -10,7 +10,7 @@ export type Oferta = {
   fechaPublicacion: string;
 };
 
-// Datos de ejemplo con la forma del modelo de backend/DB/productos.json.
+// Datos de ejemplo para mostrar ofertas sin conexión a un servicio externo.
 const MUESTRA: Oferta[] = Array.from({ length: 6 }, (_, i) => ({
   id: String(i + 1),
   uuidVendedor: `vendedor-${i + 1}`,
@@ -32,10 +32,6 @@ const normalizar = (t: string) =>
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, ''); // "cálculo" encuentra "calculo"
 
-/**
- * Cuando exista la API, solo cambia el cuerpo de estas dos funciones por un fetch.
- * Las pantallas y los hooks no se tocan.
- */
 export async function listarOfertas(texto = ''): Promise<Oferta[]> {
   await simularRed();
   const t = normalizar(texto);
