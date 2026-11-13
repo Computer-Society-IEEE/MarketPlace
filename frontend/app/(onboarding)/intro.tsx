@@ -1,41 +1,37 @@
 import { useRef, useState } from 'react';
-import {
-  FlatList,
-  Image,
-  ImageSourcePropType,
+import { FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
   StyleSheet,
   View,
-  useWindowDimensions,
-} from 'react-native';
+  useWindowDimensions, } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ui/themed-text';
 import { ActionButton } from '@/components/ui/ActionButton';
+import { Chip } from '@/components/ui/Chip';
 import { Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
 
-type Slide = { id: string; image: ImageSourcePropType; title: string; subtitle: string };
+type Slide = { id: string; title: string; subtitle: string; chips?: string[] };
 
+// Sin imágenes por ahora: cada slide reserva el espacio de la ilustración
 const SLIDES: Slide[] = [
   {
     id: '1',
-    image: { uri: 'https://via.placeholder.com/600x600.png?text=Imagen+1' },
-    title: 'COMPRA Y VENDE EN TU CAMPUS',
-    subtitle:'Emprendimientos, artículos de segunda mano y servicios de la comunidad de la Universidad Distrital.',
+    title: 'Compra y vende en tu campus',
+    subtitle: 'Emprendimientos, artículos de segunda mano y servicios de la comunidad de la Universidad Distrital.',
   },
   {
     id: '2',
-    image: { uri: 'https://via.placeholder.com/600x600.png?text=Imagen+2' },
-    title: 'RECOGE EN TU SEDE, SIN COSTO DE ENTREGA',
-    subtitle: 'Eliges el punto y la hora de entrega. Todo ocurre dentro del campus',
+    title: 'Recoges en tu sede, sin costo de entrega',
+    subtitle: 'Eliges el punto y la hora de entrega. Todo ocurre dentro del campus.',
   },
   {
     id: '3',
-    image: { uri: 'https://via.placeholder.com/600x600.png?text=Imagen+3' },
     title: 'Pagas por Nequi al recibir',
     subtitle: 'Sin datos de tarjeta ni cobros anticipados. Cada vendedor está verificado con su correo institucional.',
+    chips: ['Nequi al recibir', 'Verificados'],
   },
 ];
 
@@ -61,14 +57,26 @@ export default function Intro() {
   // Ajusta estas rutas a las reales de tu proyecto
   const goMarketplace = () => router.replace('/inicio' as any);
   const goLogin = () => router.push('/login');
+  const goBack = () => {
+    const prev = Math.max(index - 1, 0);
+    listRef.current?.scrollToIndex({ index: prev, animated: true });
+    setIndex(prev);
+  };
 
   const imageSize = width - Spacing[6] * 2;
   const imageHeight = Math.min(imageSize * 0.8, height * 0.32);
 
   const renderItem = ({ item }: { item: Slide }) => (
     <View style={[styles.slide, { width }]}>
+      {/* Espacio de la ilustración */}
       <View style={[styles.imageBox, { width: imageSize, height: imageHeight }]}>
-        <Image source={item.image} style={styles.image} resizeMode="contain" />
+        {item.chips && (
+          <View style={styles.chips}>
+            {item.chips.map((c) => (
+              <Chip key={c} label={c} />
+            ))}
+          </View>
+        )}
       </View>
 
       <ThemedText style={[styles.title, isSmall && styles.titleSmall]}>
@@ -82,6 +90,14 @@ export default function Intro() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* Omitir: espacio fijo arriba para que el contenido no salte en el último slide */}
+      <View style={styles.topBar}>
+        {!isLast && (
+          <Pressable onPress={goLogin} accessibilityRole="link" accessibilityLabel="Omitir" style={styles.omitir}>
+            <ThemedText style={styles.link}>Omitir</ThemedText>
+          </Pressable>
+        )}
+      </View>
       <FlatList
         ref={listRef}
         style={styles.list}
@@ -105,7 +121,7 @@ export default function Intro() {
 
         {isLast ? (
           <ActionButton
-            label="Explorar marketplace"
+            label="Explorar el marketplace"
             icon="storefront-outline"
             size="md"
             onPress={goMarketplace}
@@ -123,13 +139,17 @@ export default function Intro() {
 
         {/* Espacio reservado para que el botón no salte entre slides */}
         <View style={styles.linkSlot}>
-          {isLast && (
+          {isLast ? (
             <Pressable onPress={goLogin} accessibilityRole="link" hitSlop={8}>
               <ThemedText type="link" style={styles.link}>
                 Ya tengo cuenta, ingresar
               </ThemedText>
             </Pressable>
-          )}
+          ) : index > 0 ? (
+            <Pressable onPress={goBack} accessibilityRole="link" accessibilityLabel="Atrás" hitSlop={8}>
+              <ThemedText style={styles.link}>Atrás</ThemedText>
+            </Pressable>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -150,8 +170,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Palette.line,
     overflow: 'hidden',
+    justifyContent: 'flex-end',
+    padding: Spacing[3],
   },
-  image: { width: '100%', height: '100%' },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing[2] },
+  topBar: { height: TouchMin, alignItems: 'flex-end', justifyContent: 'center', paddingHorizontal: Spacing[5] },
+  omitir: { minHeight: TouchMin, justifyContent: 'center', paddingHorizontal: Spacing[2] },
   title: {
     ...Type.display,
     textAlign: 'center',

@@ -2,7 +2,7 @@ import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Spacing } from '@/constants/theme';
 import { UserRow } from '@/components/ui/UserRow';
-import { Oferta } from './ofertas';
+import { Oferta } from '../../services/ofertas';
 
 const AVATAR = 40;
 

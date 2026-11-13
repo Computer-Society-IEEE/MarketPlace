@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { Palette, Spacing, Type } from '@/constants/theme';
 import { Chip } from '@/components/ui/Chip';
-import { Sede } from './sedes';
+import { Sede } from '../services/sedes';
 
 const FOTO = 104;
 

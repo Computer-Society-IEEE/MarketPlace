@@ -1,26 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-    Modal, Pressable, Animated, Text, View, ScrollView, StyleSheet, useWindowDimensions,
-} from 'react-native';
+import { Modal, Pressable, Animated, Text, View, ScrollView, StyleSheet, useWindowDimensions, } from 'react-native';
 import { router, usePathname } from 'expo-router';
-import {FontFamily, Palette, Radius, Spacing, TouchMin, Type} from '@/constants/theme';
+import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
 import { Avatar } from '@/components/ui/UserRow';
 import { ActionButton } from '@/components/ui/ActionButton';
+import { USUARIO } from '../services/usuario';
 const opciones = [
   { label: 'Inicio',    ruta: '/inicio' },
-  { label: 'Mi cuenta',    ruta: '/buscar' },
+  { label: 'Mi cuenta',    ruta: '/cuenta' },
   { label: 'Mis pedidos', ruta: '/pedidos' },
-  { label: 'Favoritos', ruta: '/pedidos' },
-  { label: 'Mensajes', ruta: '/pedidos' },
-  { label: 'Tiendas física', ruta: '/tiendas' },
+  { label: 'Favoritos', ruta: '/favoritos' },
+  { label: 'Mensajes', ruta: '/mensajes' },
+  { label: 'Tiendas físicas', ruta: '/tiendas' },
 ];
 const opcionesInf = [
-  { label: 'Ajustes', ruta: '/pedidos' },
-  { label: 'Ayuda', ruta: '/pedidos' },
+  { label: 'Ajustes', ruta: '/cuenta/ajustes' },
+  { label: 'Ayuda', ruta: '/ayuda' },
   { label: 'Cerrar sesión', ruta: '/login' },
 ];
-// Datos temporales
-const usuario = { nombre: 'Nombre Apellido', correo: 'correo@ejemplo.com' };
+const usuario = USUARIO;
 type Props = { visible: boolean; onClose: () => void };
 
 export function MenuLateral({ visible, onClose }: Props) {
@@ -91,7 +89,7 @@ export function MenuLateral({ visible, onClose }: Props) {
         <View style={s.tarjeta}>
           <View style={s.tarjetaFila}>
             <View style={s.tarjetaTextos}>
-              <Text style={s.tarjetaTitulo} numberOfLines={2}>Nombre tienda</Text>
+              <Text style={s.tarjetaTitulo} numberOfLines={2}>{usuario.tienda.nombre}</Text>
               <Text style={s.tarjetaSub} numberOfLines={2}>Tu emprendimiento</Text>
             </View>
             <View style={s.circulo} />
@@ -101,7 +99,7 @@ export function MenuLateral({ visible, onClose }: Props) {
             label="Cambiar a perfil de vendedor"
             variant="dark"
             size="sm"
-            onPress={() => {}}
+            onPress={() => ir('/panel')}
             style={s.tarjetaBoton}
           />
         </View>

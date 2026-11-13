@@ -1,16 +1,18 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
 import { CircleButton } from '@/components/ui/CircleButton';
-import { MenuLateral } from '@/features/cuenta/MenuLateral';
-import { SEDES, SEDE_DEL_USUARIO, textoEntrega } from '@/features/sedes/sedes';
 
 type Props = {
   /** Notificaciones sin leer. Con más de 0 aparece el punto en la campana. */
   sinLeer?: number;
+  /** Texto de la sede de entrega actual. Lo arma la pantalla: un feature no importa de otro. */
+  entrega: string;
+  /** Abre el menú lateral. La pantalla lo renderiza (vive en el módulo de cuenta). */
+  onAbrirMenu: () => void;
 };
 
 const irABuscar = () => router.push('/buscar');
@@ -18,23 +20,18 @@ const irASedes = () => router.navigate('/tiendas' as any);
 
 /**
  * Encabezado verde de Inicio: menú, buscador, notificaciones y la sede de entrega.
- * Es el único lugar donde vive el menú lateral: las pantallas internas usan ScreenHeader.
+ * El menú lateral lo monta la pantalla de Inicio: las pantallas internas usan ScreenHeader.
  */
-function HomeHeaderBase({ sinLeer = 0 }: Props) {
+function HomeHeaderBase({ sinLeer = 0, entrega, onAbrirMenu }: Props) {
   const insets = useSafeAreaInsets();
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const abrirMenu = useCallback(() => setMenuAbierto(true), []);
-  const cerrarMenu = useCallback(() => setMenuAbierto(false), []);
   const verNotificaciones = useCallback(() => {
-    // TODO: abrir la pantalla de notificaciones
+    router.push('/notificaciones' as any);
   }, []);
-
-  const entrega = textoEntrega(SEDES.find((s) => s.id === SEDE_DEL_USUARIO));
 
   return (
     <View style={[s.header, { paddingTop: insets.top + Spacing[3] }]}>
       <View style={s.fila}>
-        <CircleButton tone="translucido" icon="menu" label="Abrir menú" onPress={abrirMenu} />
+        <CircleButton tone="translucido" icon="menu" label="Abrir menú" onPress={onAbrirMenu} />
 
         <Pressable
           onPress={irABuscar}
@@ -67,8 +64,6 @@ function HomeHeaderBase({ sinLeer = 0 }: Props) {
         <Text style={s.sedeTexto} numberOfLines={1}>{entrega}</Text>
         <Ionicons name="chevron-down" size={18} color={Palette.ink} />
       </Pressable>
-
-      <MenuLateral visible={menuAbierto} onClose={cerrarMenu} />
     </View>
   );
 }

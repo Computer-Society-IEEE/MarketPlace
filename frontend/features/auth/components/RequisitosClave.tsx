@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FontFamily, Palette, Spacing, Type } from '@/constants/theme';
-import { ReglasClave } from './validacion';
+import { ReglasClave } from '../services/validacion';
 
 function Requisito({ cumplido, texto }: { cumplido: boolean; texto: string }) {
   // El estado nunca depende solo del color: cambia el ícono y el peso del texto

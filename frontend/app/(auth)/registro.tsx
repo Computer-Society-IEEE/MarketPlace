@@ -1,13 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  KeyboardAvoidingView,
+import { KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-} from 'react-native';
+  View, } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
@@ -16,12 +14,10 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import { FormField } from '@/components/ui/FormField';
 import { PasswordField } from '@/components/ui/PasswordField';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { RequisitosClave } from '@/features/auth/RequisitosClave';
-import {
-  DOMINIO_INSTITUCIONAL,
+import { RequisitosClave } from '@/features/auth/components/RequisitosClave';
+import { DOMINIO_INSTITUCIONAL,
   esCorreoInstitucional,
-  evaluarClave,
-} from '@/features/auth/validacion';
+  evaluarClave, } from '@/features/auth/services/validacion';
 
 const irAlLogin = () => router.replace('/login');
 

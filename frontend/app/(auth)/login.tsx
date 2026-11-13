@@ -1,13 +1,11 @@
 import { useCallback, useState } from 'react';
-import {
-  KeyboardAvoidingView,
+import { KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-} from 'react-native';
+  View, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,7 +14,7 @@ import { ActionButton } from '@/components/ui/ActionButton';
 import { AuthBackdrop } from '@/components/ui/AuthBackdrop';
 import { FormField } from '@/components/ui/FormField';
 import { PasswordField } from '@/components/ui/PasswordField';
-import { DOMINIO_INSTITUCIONAL } from '@/features/auth/validacion';
+import { DOMINIO_INSTITUCIONAL } from '@/features/auth/services/validacion';
 
 const ALTO_ENCABEZADO = 258;
 

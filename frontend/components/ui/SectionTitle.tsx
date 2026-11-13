@@ -1,5 +1,5 @@
 import { Text, StyleSheet } from 'react-native';
-import { Palette, Spacing} from '@/constants/theme';
+import { Palette, Spacing } from '@/constants/theme';
 
 export function SectionTitle({ children }: { children: string }) {
   return <Text style={s.title}>{children}</Text>;
