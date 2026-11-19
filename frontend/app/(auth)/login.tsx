@@ -14,7 +14,10 @@ import { ActionButton } from '@/components/ui/ActionButton';
 import { AuthBackdrop } from '@/components/ui/AuthBackdrop';
 import { FormField } from '@/components/ui/FormField';
 import { PasswordField } from '@/components/ui/PasswordField';
+import { Aviso } from '@/components/ui/Aviso';
 import { DOMINIO_INSTITUCIONAL } from '@/features/auth/services/validacion';
+import { INTENTOS_MAXIMOS, autenticar } from '@/features/auth/services/autenticacion';
+import { iniciarSesion } from '@/features/auth/store/sesion';
 
 const ALTO_ENCABEZADO = 258;
 
@@ -25,14 +28,26 @@ export default function Login() {
   const insets = useSafeAreaInsets();
   const [correo, setCorreo] = useState('');
   const [clave, setClave] = useState('');
+  const [intentos, setIntentos] = useState(0);
+  const [cargando, setCargando] = useState(false);
+  const fallo = intentos > 0;
+  const quedan = Math.max(INTENTOS_MAXIMOS - intentos, 0);
 
-  const ingresar = useCallback(() => {
-    // TODO: validar y autenticar con correo y clave
-  }, []);
+  const ingresar = useCallback(async () => {
+    if (cargando) return;
+    setCargando(true);
+    const { ok } = await autenticar(correo.trim(), clave);
+    setCargando(false);
+    if (ok) {
+      iniciarSesion();
+      router.replace('/inicio' as any);
+    } else {
+      // Se conserva el correo: la persona solo corrige la contraseña
+      setIntentos((n) => n + 1);
+    }
+  }, [cargando, correo, clave]);
 
-  const recuperarClave = useCallback(() => {
-    // TODO: ir a recuperar contraseña
-  }, []);
+  const recuperarClave = useCallback(() => router.push('/recuperar' as any), []);
 
   return (
     <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -53,6 +68,13 @@ export default function Login() {
 
         {/* Tarjeta: se monta sobre el borde inferior del bloque lima */}
         <View style={s.tarjeta}>
+          {fallo && (
+            <Aviso
+              tono="error"
+              titulo="No pudimos iniciar sesión"
+              mensaje="El correo o la contraseña no coinciden. Tu correo sigue escrito: revisa la contraseña."
+            />
+          )}
           <FormField
             label="Correo institucional"
             icon="mail-outline"
@@ -71,6 +93,7 @@ export default function Login() {
             value={clave}
             onChangeText={setClave}
             autoComplete="current-password"
+            error={fallo ? `Contraseña incorrecta. Te quedan ${quedan} ${quedan === 1 ? 'intento' : 'intentos'}.` : undefined}
           />
 
           <Pressable
@@ -82,7 +105,8 @@ export default function Login() {
           </Pressable>
 
           <ActionButton
-            label="Ingresar"
+            label={cargando ? 'Ingresando…' : 'Ingresar'}
+            disabled={cargando}
             icon="arrow-forward"
             iconPosition="right"
             size="cta"

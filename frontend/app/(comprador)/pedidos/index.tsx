@@ -1,103 +1,158 @@
-import { useCallback, useMemo, useState } from 'react';
-import { Alert, SectionList, SectionListRenderItem, StyleSheet, Text, View } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
-import { useBottomNavInset } from '@/components/ui/BottomNav';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { FilterChip } from '@/components/ui/FilterChip';
-import { Palette, Spacing, Type } from '@/constants/theme';
-import { PEDIDOS, Pedido, enCurso, porCalificar } from '@/features/pedidos/services/historial';
-import { PedidoCard } from '@/features/pedidos/components/PedidoCard';
+import { ActionButton } from '@/components/ui/ActionButton';
+import { Card } from '@/components/ui/Card';
+import { SectionHeader } from '@/components/ui/SectionHeader';
+import { formatoPrecio } from '@/utils/formato';
+import { FontFamily, Palette, Radius, Spacing, Type } from '@/constants/theme';
+import { PEDIDOS } from '@/features/pedidos/services/historial';
 
-type Filtro = 'todo' | 'calificar' | 'curso';
+const PASOS = ['Pedido recibido', 'En preparación', 'Listo para recoger', 'Entregado'] as const;
+const ACTUAL = { 'En preparación': 1, 'Listo para recoger': 2, 'Pago por confirmar': 3, Entregado: 3 } as const;
 
-const keyExtractor = (p: Pedido) => p.id;
-const Separador = () => <View style={s.separador} />;
+/** Seguimiento de un pedido: línea de tiempo, datos de entrega y acciones (escribir, reportar, calificar). */
+export default function Seguimiento() {
+  const insets = useSafeAreaInsets();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const pedido = PEDIDOS.find((p) => p.id === id);
 
-export default function MisPedidos() {
-  const navInset = useBottomNavInset();
-  const [filtro, setFiltro] = useState<Filtro>('todo');
-  // Al volver de calificar, el pedido ya no está "por calificar": se recalcula al enfocar
-  const [version, setVersion] = useState(0);
-  useFocusEffect(useCallback(() => setVersion((v) => v + 1), []));
-
-  const pendientes = useMemo(() => PEDIDOS.filter(porCalificar).length, [version]);
-
-  const secciones = useMemo(() => {
-    const visibles = PEDIDOS.filter((p) =>
-      filtro === 'curso' ? enCurso(p) : filtro === 'calificar' ? porCalificar(p) : true
+  if (!pedido) {
+    return (
+      <View style={s.pantalla}>
+        <ScreenHeader title="Pedido" />
+        <Text style={s.vacio}>No encontramos este pedido.</Text>
+      </View>
     );
-    return [
-      { title: 'En curso', data: visibles.filter(enCurso) },
-      { title: 'Anteriores', data: visibles.filter((p) => !enCurso(p)) },
-    ].filter((sec) => sec.data.length > 0);
-  }, [filtro, version]);
+  }
 
-  const verSeguimiento = useCallback((id: string) => {
-    router.push({ pathname: '/pedidos/[id]' as any, params: { id } });
-  }, []);
-  const repetir = useCallback((productoId: string) => {
-    router.push({ pathname: '/producto/[id]', params: { id: productoId } });
-  }, []);
-  const calificar = useCallback((id: string) => {
-    router.push({ pathname: '/pedidos/[id]/calificar' as any, params: { id } });
-  }, []);
-  const avisar = useCallback((productoId: string) => {
-    // TODO: guardar el aviso de disponibilidad (productoId) en la cuenta
-    Alert.alert('Listo', 'Te avisaremos cuando este producto vuelva a estar disponible.');
-  }, []);
+  const actual = ACTUAL[pedido.estado];
+  const entregado = pedido.estado === 'Entregado';
+  const pagoRechazado = pedido.estado === 'Pago por confirmar' ? pedido.pagoRechazado : undefined;
 
-  const renderItem: SectionListRenderItem<Pedido> = useCallback(
-    ({ item }) => (
-      <View style={s.celda}>
-        <PedidoCard
-          pedido={item}
-          onSeguimiento={verSeguimiento}
-          onRepetir={repetir}
-          onCalificar={calificar}
-          onAvisar={avisar}
-        />
-      </View>
-    ),
-    [verSeguimiento, repetir, calificar, avisar]
-  );
-
-  const encabezado = (
-    <View>
-      <ScreenHeader title="Mis pedidos" />
-      <View style={s.chips}>
-        <FilterChip label="Todos" selected={filtro === 'todo'} onPress={() => setFiltro('todo')} />
-        <FilterChip
-          label={`Por calificar · ${pendientes}`}
-          selected={filtro === 'calificar'}
-          onPress={() => setFiltro('calificar')}
-        />
-        <FilterChip label="En curso" selected={filtro === 'curso'} onPress={() => setFiltro('curso')} />
-      </View>
-    </View>
-  );
+  const reportar = () => router.push({ pathname: '/reportar' as any, params: { pedidoId: pedido.id } });
 
   return (
-    <SectionList
-      style={s.pantalla}
-      contentContainerStyle={{ paddingBottom: navInset }}
-      sections={secciones}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      renderSectionHeader={({ section }) => <Text style={s.seccion}>{section.title}</Text>}
-      ItemSeparatorComponent={Separador}
-      ListHeaderComponent={encabezado}
-      ListEmptyComponent={<Text style={s.vacio}>No tienes pedidos en esta lista.</Text>}
-      stickySectionHeadersEnabled={false}
-      showsVerticalScrollIndicator={false}
-    />
+    <ScrollView style={s.pantalla} contentContainerStyle={{ paddingBottom: insets.bottom + Spacing[8] }} showsVerticalScrollIndicator={false}>
+      <ScreenHeader title={`Pedido n.º ${pedido.numero}`} />
+      <View style={s.contenido}>
+        <Card style={s.resumen}>
+          <View style={s.textos}>
+            <Text style={s.titulo}>{pedido.titulo}</Text>
+            <Text style={s.detalle}>{pedido.vendedor}</Text>
+          </View>
+          <Text style={s.precio}>{formatoPrecio(pedido.precio)}</Text>
+        </Card>
+
+        {pagoRechazado && (
+          <View style={s.alerta} accessibilityRole="alert">
+            <Ionicons name="alert-circle" size={22} color={Palette.danger} />
+            <View style={s.textos}>
+              <Text style={s.alertaTitulo}>{`${pagoRechazado.medio} rechazó la transferencia`}</Text>
+              <Text style={s.alertaTexto}>
+                {`Ya tienes el producto, falta que el pago llegue al vendedor. No se movió dinero: puede ser saldo insuficiente o un fallo de ${pagoRechazado.medio}. Reintenta o paga en efectivo ahora mismo.`}
+              </Text>
+              <View style={s.alertaAcciones}>
+                <ActionButton label={`Reintentar con ${pagoRechazado.medio}`} size="sm" align="center" onPress={() => Alert.alert('Reintentando pago', `Abrimos ${pagoRechazado.medio} para repetir la transferencia.`)} style={s.boton} />
+                <ActionButton label="Pagar en efectivo" variant="dark" size="sm" align="center" onPress={() => Alert.alert('Pago en efectivo', 'Entrégale el dinero al vendedor y pídele que confirme el pago.')} style={s.boton} />
+              </View>
+            </View>
+          </View>
+        )}
+
+        <SectionHeader title="Estado" />
+        <View style={s.linea}>
+          {PASOS.map((p, i) => {
+            const hecho = i <= actual;
+            return (
+              <View key={p} style={s.paso} accessible accessibilityLabel={`${p}${i === actual ? ', paso actual' : hecho ? ', completado' : ', pendiente'}`}>
+                <View style={s.columna}>
+                  <View style={[s.punto, hecho && s.puntoOn]}>
+                    {hecho && <Ionicons name="checkmark" size={16} color={Palette.lima} />}
+                  </View>
+                  {i < PASOS.length - 1 && <View style={[s.conector, i < actual && s.conectorOn]} />}
+                </View>
+                <Text style={[s.pasoTexto, i === actual && s.pasoActual, !hecho && s.pasoPendiente]}>{p}</Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {pagoRechazado && (
+          <Card style={s.fila}>
+            <View style={[s.icono, s.iconoAlerta]}>
+              <Ionicons name="card-outline" size={20} color={Palette.danger} />
+            </View>
+            <View style={s.textos}>
+              <Text style={s.titulo}>Pago pendiente</Text>
+              <Text style={s.detalle}>{`${formatoPrecio(pedido.precio)} por ${pagoRechazado.medio} al recoger`}</Text>
+            </View>
+          </Card>
+        )}
+
+        <Card style={s.fila}>
+          <View style={s.icono}>
+            <Ionicons name="location-outline" size={20} color={Palette.ink} />
+          </View>
+          <View style={s.textos}>
+            <Text style={s.titulo}>{entregado ? 'Entrega' : 'Cómo recoges'}</Text>
+            <Text style={s.detalle}>{pedido.detalle}</Text>
+          </View>
+        </Card>
+
+        <View style={s.acciones}>
+          <ActionButton
+            label="Escribir al vendedor"
+            icon="chatbubble-outline"
+            size="cta"
+            align="center"
+            onPress={() =>
+              router.push({
+                pathname: '/mensajes/[id]' as any,
+                params: { id: `pedido-${pedido.id}`, con: pedido.vendedor, producto: `Pedido n.º ${pedido.numero} · ${pedido.titulo}`, productoId: pedido.productoId },
+              })
+            }
+            style={s.boton}
+          />
+          {entregado && !pedido.calificado && (
+            <ActionButton label="Calificar" icon="star-outline" variant="dark" size="cta" align="center" onPress={() => router.push({ pathname: '/pedidos/[id]/calificar' as any, params: { id: pedido.id } })} style={s.boton} />
+          )}
+          <ActionButton label="Reportar un problema" icon="flag-outline" variant="dark" size="cta" align="center" onPress={reportar} style={s.boton} />
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
+const PUNTO = 28;
 const s = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: Palette.ground },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing[2], paddingHorizontal: Spacing[5], marginTop: Spacing[4] },
-  seccion: { ...Type.title3, color: Palette.ink, paddingHorizontal: Spacing[5], marginTop: Spacing[5], marginBottom: Spacing[3] },
-  celda: { paddingHorizontal: Spacing[5] },
-  separador: { height: Spacing[3] },
   vacio: { ...Type.body, color: Palette.textMuted, textAlign: 'center', marginTop: Spacing[8] },
+  contenido: { paddingHorizontal: Spacing[5], paddingTop: Spacing[4], gap: Spacing[3] },
+  resumen: { flexDirection: 'row', gap: Spacing[3], alignItems: 'flex-start' },
+  textos: { flex: 1, minWidth: 0, gap: 2 },
+  titulo: { ...Type.bodySm, fontFamily: FontFamily.bodyBold, color: Palette.ink },
+  detalle: { ...Type.caption, color: Palette.textMuted },
+  precio: { ...Type.priceSm, color: Palette.ink },
+  linea: { paddingLeft: Spacing[2] },
+  paso: { flexDirection: 'row', gap: Spacing[3], minHeight: 52 },
+  columna: { alignItems: 'center', width: PUNTO },
+  punto: { width: PUNTO, height: PUNTO, borderRadius: PUNTO / 2, borderWidth: 2, borderColor: Palette.border, alignItems: 'center', justifyContent: 'center' },
+  puntoOn: { backgroundColor: Palette.ink, borderColor: Palette.ink },
+  conector: { flex: 1, width: 2, backgroundColor: Palette.border, marginVertical: 2 },
+  conectorOn: { backgroundColor: Palette.ink },
+  pasoTexto: { ...Type.bodySm, color: Palette.ink, paddingTop: 4 },
+  pasoActual: { fontFamily: FontFamily.bodyBold },
+  pasoPendiente: { color: Palette.textMuted },
+  fila: { flexDirection: 'row', alignItems: 'center', gap: Spacing[3], padding: Spacing[3] },
+  icono: { width: 40, height: 40, borderRadius: 20, backgroundColor: Palette.lima100, alignItems: 'center', justifyContent: 'center' },
+  alerta: { flexDirection: 'row', gap: Spacing[3], backgroundColor: Palette.dangerBg, borderWidth: 1, borderColor: Palette.danger, borderRadius: Radius.lg, padding: Spacing[4] },
+  alertaTitulo: { ...Type.bodySm, fontFamily: FontFamily.bodyBold, color: Palette.ink },
+  alertaTexto: { ...Type.caption, color: Palette.ink },
+  alertaAcciones: { gap: Spacing[2], marginTop: Spacing[2] },
+  iconoAlerta: { backgroundColor: Palette.dangerBg },
+  acciones: { gap: Spacing[2], marginTop: Spacing[3] },
+  boton: { alignSelf: 'stretch' },
 });

@@ -55,6 +55,7 @@ export default function RootLayout() {
           <Stack.Screen name="(comun)" />
           <Stack.Screen name="(comprador)" />
           <Stack.Screen name="(vendedor)" />
+          <Stack.Screen name="(admin)" />
         </Stack>
         <StatusBar style="dark" />
       </ThemeProvider>

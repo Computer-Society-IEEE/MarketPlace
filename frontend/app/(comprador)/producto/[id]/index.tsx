@@ -11,8 +11,15 @@ import { Card } from '@/components/ui/Card';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { formatoPrecio } from '@/utils/formato';
 import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
-import { SEDES, SEDE_DEL_USUARIO } from '@/features/sedes/services/sedes';
-import { useOferta } from '@/features/productos/hooks/useOfertas';
+import { Aviso } from '@/components/ui/Aviso';
+import { EstadoPantalla } from '@/components/ui/EstadoPantalla';
+import { EsqueletoProductos } from '@/components/ui/Esqueleto';
+import { SEDES } from '@/features/sedes/services/sedes';
+import { sedeActual } from '@/features/sedes/store/sedeActual';
+import { sesion } from '@/features/auth/store/sesion';
+import { useOferta, useOfertas } from '@/features/productos/hooks/useOfertas';
+import { aTarjeta } from '@/features/productos/services/ofertas';
+import { ProductCard } from '@/features/productos/components/comprador/ProductCard';
 
 const nota = (n: number) => n.toLocaleString('es-CO', { minimumFractionDigits: 1 });
 const irATiendas = () => router.navigate('/tiendas' as any);
@@ -26,8 +33,30 @@ export default function Producto() {
   const [favorito, setFavorito] = useState(false);
   const [avisar, setAvisar] = useState(false);
 
-  const sede = SEDES.find((x) => x.id === SEDE_DEL_USUARIO);
+  const sedeId = sedeActual.use();
+  const sede = SEDES.find((x) => x.id === sedeId);
+  const { activa } = sesion.use();
   const agotado = oferta ? (oferta.unidades ?? 1) === 0 : false;
+  // Solo se muestran si el producto está agotado: de la misma categoría y con existencias
+  const { data: mismaCategoria = [] } = useOfertas({ categoria: oferta?.categoria, soloDisponibles: true });
+  const parecidos = mismaCategoria.filter((o) => o.id !== oferta?.id).slice(0, 2);
+
+  // Explorar es libre; el detalle pide sesión
+  if (!activa) {
+    return (
+      <View style={s.pantalla}>
+        <ScreenHeader title="Producto" />
+        <EstadoPantalla
+          variante="loginRequerido"
+          acciones={[
+            { label: 'Ingresar', icon: 'log-in-outline', onPress: () => router.push('/login') },
+            { label: 'Crear cuenta', onPress: () => router.push('/registro') },
+            { label: 'Seguir explorando', onPress: () => router.back() },
+          ]}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={s.pantalla}>
@@ -45,7 +74,9 @@ export default function Producto() {
         />
 
         {isLoading ? (
-          <ActivityIndicator style={s.estado} color={Palette.ink} accessibilityLabel="Cargando producto" />
+          <View style={s.estado}>
+            <EsqueletoProductos filas={1} etiqueta="Cargando producto" />
+          </View>
         ) : !oferta ? (
           <Text style={[s.vacio, s.estado]}>Este producto ya no está disponible.</Text>
         ) : (
@@ -85,6 +116,36 @@ export default function Producto() {
                   : `Disponible: ${oferta.unidades ?? 1} ${(oferta.unidades ?? 1) === 1 ? 'unidad' : 'unidades'}`}
               </Text>
             </View>
+
+            {agotado && (
+              <>
+                <Aviso
+                  tono="alerta"
+                  icon="warning-outline"
+                  titulo="Este producto se agotó"
+                  mensaje={`Te avisamos por notificación si ${oferta.vendedor} lo vuelve a publicar.`}
+                />
+                {parecidos.length > 0 && (
+                  <>
+                    <SectionHeader
+                      title="Productos parecidos"
+                      actionLabel="Ver más"
+                      onAction={() => router.push({ pathname: '/buscar' as any, params: { categoria: oferta.categoria } })}
+                    />
+                    <View style={s.parecidos}>
+                      {parecidos.map((o) => (
+                        <View key={o.id} style={s.parecido}>
+                          <ProductCard
+                            producto={aTarjeta(o)}
+                            onPress={(pid) => router.push({ pathname: '/producto/[id]', params: { id: pid } })}
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </>
+                )}
+              </>
+            )}
 
             {/* Entrega */}
             <Card style={s.fila}>
@@ -222,6 +283,8 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
 }
 
 const s = StyleSheet.create({
+  parecidos: { flexDirection: 'row', gap: Spacing[3] },
+  parecido: { flex: 1 },
   pantalla: { flex: 1, backgroundColor: Palette.ground },
   estado: { marginTop: Spacing[6] },
   vacio: { ...Type.body, color: Palette.textMuted, textAlign: 'center' },

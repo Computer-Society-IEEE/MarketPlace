@@ -129,6 +129,27 @@ export default function Chat() {
         showsVerticalScrollIndicator={false}
       />
 
+      {conversacion.estadoPedido ? (
+        <View
+          style={[s.estadoPedido, conversacion.estadoPedido === 'entregado' ? s.estadoEntregado : s.estadoCancelado]}
+          accessibilityRole="alert"
+        >
+          <Ionicons
+            name={conversacion.estadoPedido === 'entregado' ? 'checkmark-circle-outline' : 'information-circle-outline'}
+            size={22}
+            color={conversacion.estadoPedido === 'entregado' ? Palette.success : Palette.info}
+          />
+          <View style={s.estadoTextos}>
+            <Text style={s.estadoTitulo}>{conversacion.estadoPedido === 'entregado' ? 'Pedido entregado' : 'Pedido cancelado'}</Text>
+            <Text style={s.estadoTexto}>
+              {conversacion.estadoPedido === 'entregado'
+                ? 'Gracias por vender en el campus. Puedes seguir escribiendo si hace falta.'
+                : 'La conversación sigue abierta por si quieren acordar otra compra.'}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
       {conversacion.rol !== 'soporte' && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.respuestas} contentContainerStyle={s.respuestasContenido} keyboardShouldPersistTaps="handled">
           {respuestas.map((r) => (
@@ -179,6 +200,12 @@ const s = StyleSheet.create({
   },
   contextoTexto: { ...Type.bodySm, fontFamily: FontFamily.bodyBold, color: Palette.ink, flex: 1 },
   contextoEnlace: { ...Type.bodySm, fontFamily: FontFamily.bodyBold, color: Palette.ink, textDecorationLine: 'underline' },
+  estadoPedido: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing[3], marginHorizontal: Spacing[5], marginBottom: Spacing[2], padding: Spacing[4], borderRadius: Radius.lg, borderWidth: 1 },
+  estadoEntregado: { backgroundColor: Palette.successBg, borderColor: Palette.success },
+  estadoCancelado: { backgroundColor: Palette.infoBg, borderColor: Palette.info },
+  estadoTextos: { flex: 1, gap: 2 },
+  estadoTitulo: { ...Type.bodySm, fontFamily: FontFamily.bodyBold, color: Palette.ink },
+  estadoTexto: { ...Type.caption, color: Palette.ink },
   lista: { flex: 1 },
   listaContenido: { paddingHorizontal: Spacing[5], paddingVertical: Spacing[4], gap: Spacing[3], flexGrow: 1 },
   fila: { gap: 2, maxWidth: '82%' },

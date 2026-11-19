@@ -11,11 +11,29 @@ import { ActivityIndicator,
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenHeimport { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View, } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { FilterChip } from '@/components/ui/FilterChip';
+import { EstadoPantalla } from '@/components/ui/EstadoPantalla';
+import { EsqueletoProductos } from '@/components/ui/Esqueleto';
+import { useConexion } from '@/utils/use-conexion';
+import { SEDES } from '@/features/sedes/services/sedes';
 import { ProductCard } from '@/features/productos/components/comprador/ProductCard';
+import { FiltrosAplicados, FiltrosBuscar, contarFiltros } from '@/features/productos/components/comprador/FiltrosBuscar';
 import { TipoOferta } from '@/utils/catalogo';
 import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
 import { useDebouncedValue } from '@/utils/use-debounced-value';
@@ -50,6 +68,12 @@ export default function Buscar() {
   const [tipo, setTipo] = useState<TipoOferta | undefined>(comoTipo(params.tipo));
   const [categoria, setCategoria] = useState<Categoria | undefined>(comoCategoria(params.categoria));
   const [soloHoy, setSoloHoy] = useState(false);
+  const [sede, setSede] = useState<string | undefined>();
+  const [precioMin, setPrecioMin] = useState<number | undefined>();
+  const [precioMax, setPrecioMax] = useState<number | undefined>();
+  const [soloCuatro, setSoloCuatro] = useState(false);
+  const [hojaAbierta, setHojaAbierta] = useState(false);
+  const conectado = useConexion();
 
   // La pantalla sigue montada entre visitas: si Inicio la abre con otro filtro, se actualiza
   useEffect(() => {
@@ -64,9 +88,25 @@ export default function Buscar() {
     tipo,
     categoria,
     soloDisponibles: soloHoy,
+    sede,
+    precioMin,
+    precioMax,
+    calificacionMin: soloCuatro ? 4 : undefined,
   });
 
-  const enBusqueda = !!(texto.trim() || tipo || categoria);
+  const aplicados: FiltrosAplicados = { tipo, sede, precioMin, precioMax, soloCuatroEstrellas: soloCuatro, soloHoy };
+  const aplicar = useCallback((f: FiltrosAplicados) => {
+    setTipo(f.tipo);
+    setCategoria(undefined);
+    setSede(f.sede);
+    setPrecioMin(f.precioMin);
+    setPrecioMax(f.precioMax);
+    setSoloCuatro(f.soloCuatroEstrellas);
+    setSoloHoy(f.soloHoy);
+  }, []);
+  const nFiltros = contarFiltros(aplicados);
+
+  const enBusqueda = !!(texto.trim() || tipo || categoria || nFiltros > 0);
   const disponibles = useMemo(() => data.filter((o) => (o.unidades ?? 1) > 0).length, [data]);
 
   const abrir = useCallback((id: string) => {
@@ -83,6 +123,10 @@ export default function Buscar() {
     setTipo(undefined);
     setCategoria(undefined);
     setSoloHoy(false);
+    setSede(undefined);
+    setPrecioMin(undefined);
+    setPrecioMax(undefined);
+    setSoloCuatro(false);
   }, []);
 
   const renderItem: ListRenderItem<Oferta> = useCallback(
@@ -133,6 +177,12 @@ export default function Buscar() {
           />
         ))}
         {categoria && <FilterChip label={categoria} selected onPress={() => setCategoria(undefined)} icon="close" />}
+        <FilterChip
+          label={nFiltros > 0 ? `Filtros · ${nFiltros}` : 'Filtros'}
+          icon="options-outline"
+          selected={nFiltros > 0}
+          onPress={() => setHojaAbierta(true)}
+        />
       </View>
 
       {enBusqueda ? (
@@ -170,13 +220,12 @@ export default function Buscar() {
     </View>
   );
 
-  const vacio = isLoading ? (
-    <ActivityIndicator style={s.estado} color={Palette.ink} accessibilityLabel="Cargando productos" />
+  const vacio = !conectado ? (
+    <EstadoPantalla variante="sinConexion" acciones={[{ label: 'Reintentar', icon: 'refresh', onPress: () => refetch() }]} />
+  ) : isLoading ? (
+    <EsqueletoProductos />
   ) : isError ? (
-    <View style={s.estado}>
-      <Text style={s.mensaje}>No pudimos cargar los productos.</Text>
-      <ActionButton label="Reintentar" icon="refresh" size="sm" onPress={refetch} />
-    </View>
+    <EstadoPantalla variante="error" acciones={[{ label: 'Reintentar', icon: 'refresh', onPress: () => refetch() }]} referencia="MUD-503" />
   ) : (
     <Text style={[s.mensaje, s.estado]}>
       {texto.trim() ? `Sin resultados para «${texto.trim()}».` : 'No hay productos con estos filtros.'}
@@ -184,6 +233,7 @@ export default function Buscar() {
   );
 
   return (
+    <>
     <FlatList
       style={s.pantalla}
       contentContainerStyle={{ paddingBottom: insets.bottom + Spacing[6] }}
@@ -197,6 +247,14 @@ export default function Buscar() {
       keyboardDismissMode="on-drag"
       showsVerticalScrollIndicator={false}
     />
+    <FiltrosBuscar
+      visible={hojaAbierta}
+      valor={aplicados}
+      sedes={SEDES.map((x) => ({ id: x.id, nombre: x.nombre }))}
+      onClose={() => setHojaAbierta(false)}
+      onAplicar={aplicar}
+    />
+    </>
   );
 }
 

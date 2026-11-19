@@ -6,7 +6,11 @@ import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constant
 import { HomeHeader } from '@/features/productos/components/comprador/HomeHeader';
 import { NOTIFICACIONES_SIN_LEER } from '@/features/notificaciones/services/notificaciones';
 import { MenuLateral } from '@/features/cuenta/components/MenuLateral';
-import { SEDES, SEDE_DEL_USUARIO, textoEntrega } from '@/features/sedes/services/sedes';
+import { SEDES, textoEntrega } from '@/features/sedes/services/sedes';
+import { SelectorSede } from '@/features/sedes/components/SelectorSede';
+import { elegirSede, sedeActual } from '@/features/sedes/store/sedeActual';
+import { EstadoPantalla } from '@/components/ui/EstadoPantalla';
+import { useConexion } from '@/utils/use-conexion';
 import { useBottomNavInset } from '@/components/ui/BottomNav';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ProductCard } from '@/features/productos/components/comprador/ProductCard';
@@ -19,8 +23,6 @@ import { BENEFICIOS,
   EMPRENDIMIENTOS,
   RECOMPRAS, } from '@/features/productos/services/destacados';
 
-const entrega = textoEntrega(SEDES.find((x) => x.id === SEDE_DEL_USUARIO));
-
 const irABuscar = () => router.push('/buscar');
 const irAPedidos = () => router.navigate('/pedidos' as any);
 const irATiendas = () => router.navigate('/tiendas' as any);
@@ -28,6 +30,10 @@ const irATiendas = () => router.navigate('/tiendas' as any);
 /** Inicio del comprador, según el rediseño: encabezado lima, beneficios, banner, categorías y listados. */
 export default function Inicio() {
   const navInset = useBottomNavInset();
+  const sedeId = sedeActual.use();
+  const entrega = textoEntrega(SEDES.find((x) => x.id === sedeId));
+  const conectado = useConexion();
+  const [sedeAbierta, setSedeAbierta] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const abrirMenu = useCallback(() => setMenuAbierto(true), []);
   const cerrarMenu = useCallback(() => setMenuAbierto(false), []);
@@ -39,6 +45,17 @@ export default function Inicio() {
   // Dos columnas: pares de tarjetas para que ambas tengan el mismo ancho
   const filas = [DESTACADOS.slice(0, 2), DESTACADOS.slice(2, 4)];
 
+  if (!conectado) {
+    return (
+      <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: navInset }}>
+        <HomeHeader sinLeer={NOTIFICACIONES_SIN_LEER} entrega={entrega} onAbrirMenu={abrirMenu} onCambiarSede={() => setSedeAbierta(true)} />
+        <EstadoPantalla variante="sinConexion" />
+        <MenuLateral visible={menuAbierto} onClose={cerrarMenu} />
+        <SelectorSede visible={sedeAbierta} valor={sedeId} onClose={() => setSedeAbierta(false)} onElegir={elegirSede} />
+      </ScrollView>
+    );
+  }
+
   return (
     <>
     <ScrollView
@@ -46,7 +63,7 @@ export default function Inicio() {
       contentContainerStyle={{ paddingBottom: navInset }}
       showsVerticalScrollIndicator={false}
     >
-      <HomeHeader sinLeer={NOTIFICACIONES_SIN_LEER} entrega={entrega} onAbrirMenu={abrirMenu} />
+      <HomeHeader sinLeer={NOTIFICACIONES_SIN_LEER} entrega={entrega} onAbrirMenu={abrirMenu} onCambiarSede={() => setSedeAbierta(true)} />
 
       {/* Beneficios */}
       <View style={s.beneficios}>
@@ -185,6 +202,7 @@ export default function Inicio() {
       </View>
     </ScrollView>
     <MenuLateral visible={menuAbierto} onClose={cerrarMenu} />
+    <SelectorSede visible={sedeAbierta} valor={sedeId} onClose={() => setSedeAbierta(false)} onElegir={elegirSede} />
     </>
   );
 }
