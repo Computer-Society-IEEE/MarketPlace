@@ -39,6 +39,8 @@ export type Oferta = {
   marca?: string;
   /** Dónde y cuándo se recoge: "Plazoleta central · Lunes a viernes, 12:00 m. a 2:00 p. m." */
   entrega?: string;
+  /** Id de la sede donde se recoge. Sin sede, la oferta aparece en todas. */
+  sede?: string;
   /** Publicación de la persona que usa la app: no se puede comprar a sí misma. */
   propia?: boolean;
   listaResenas?: Resena[];
@@ -139,6 +141,11 @@ export type FiltrosOferta = {
   tipo?: Tipo;
   categoria?: Categoria;
   soloDisponibles?: boolean;
+  /** Id de la sede donde se recoge. */
+  sede?: string;
+  precioMin?: number;
+  precioMax?: number;
+  calificacionMin?: number;
 };
 
 const simularRed = (ms = 250) => new Promise<void>((r) => setTimeout(r, ms));
@@ -156,7 +163,8 @@ const normalizar = (t: string) =>
  */
 export async function listarOfertas(filtros: FiltrosOferta | string = {}): Promise<Oferta[]> {
   await simularRed();
-  const { texto = '', tipo, categoria, soloDisponibles } = typeof filtros === 'string' ? { texto: filtros } : filtros;
+  const { texto = '', tipo, categoria, soloDisponibles, sede, precioMin, precioMax, calificacionMin } =
+    typeof filtros === 'string' ? { texto: filtros } : filtros;
   const t = normalizar(texto);
   return MUESTRA.filter(
     (o) =>
@@ -164,7 +172,11 @@ export async function listarOfertas(filtros: FiltrosOferta | string = {}): Promi
       (!t || normalizar(o.nombre).includes(t) || normalizar(o.vendedor).includes(t)) &&
       (!tipo || o.tipo === tipo) &&
       (!categoria || o.categoria === categoria) &&
-      (!soloDisponibles || (o.unidades ?? 1) > 0)
+      (!soloDisponibles || (o.unidades ?? 1) > 0) &&
+      (!sede || !o.sede || o.sede === sede) &&
+      (precioMin === undefined || o.precio >= precioMin) &&
+      (precioMax === undefined || o.precio <= precioMax) &&
+      (calificacionMin === undefined || (o.calificacion ?? 0) >= calificacionMin)
   );
 }
 

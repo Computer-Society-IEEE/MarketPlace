@@ -11,6 +11,7 @@ import { EstadoPedido, Pedido } from '../services/historial';
 const ESTADO: Record<EstadoPedido, { bg: string; fg: string; icon: keyof typeof Ionicons.glyphMap }> = {
   'Listo para recoger': { bg: Palette.successBg, fg: Palette.success, icon: 'checkmark-circle' },
   'En preparación': { bg: Palette.warningBg, fg: Palette.warning, icon: 'time-outline' },
+  'Pago por confirmar': { bg: Palette.warningBg, fg: Palette.warning, icon: 'alert-circle-outline' },
   Entregado: { bg: Palette.lima100, fg: Palette.green700, icon: 'bag-check-outline' },
 };
 

@@ -13,6 +13,8 @@ export type Conversacion = {
   contexto?: string;
   productoId?: string;
   sinLeer: number;
+  /** Si el pedido ya se cerró, el chat muestra un aviso. */
+  estadoPedido?: 'entregado' | 'cancelado';
   mensajes: Mensaje[];
 };
 

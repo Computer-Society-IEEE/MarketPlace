@@ -1,4 +1,4 @@
-export type EstadoPedido = 'Listo para recoger' | 'En preparación' | 'Entregado';
+export type EstadoPedido = 'Listo para recoger' | 'En preparación' | 'Pago por confirmar' | 'Entregado';
 
 export type Pedido = {
   id: string;
@@ -14,6 +14,8 @@ export type Pedido = {
   calificado?: boolean;
   /** Producto agotado: en vez de repetir la compra se ofrece el aviso. */
   agotado?: boolean;
+  /** Solo con estado "Pago por confirmar": el medio de pago que rechazó la transferencia. */
+  pagoRechazado?: { medio: string };
 };
 
 // Datos de ejemplo del diseño. Cuando exista la API, esto pasa a ser una llamada y la pantalla no cambia.

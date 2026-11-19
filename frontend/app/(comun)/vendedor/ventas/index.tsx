@@ -13,6 +13,7 @@ import {
   ANIO_ACTUAL,
   MES_ACTUAL,
   PEDIDOS_VENTA,
+  type PedidoVenta,
   VENTAS_CANCELADAS,
   VENTAS_MESES_ANTERIORES,
   confirmarEntrega,
@@ -25,7 +26,7 @@ const ALTO_BARRA = 96;
 const escribir = (chatId: string) => router.push({ pathname: '/mensajes/[id]' as any, params: { id: chatId } });
 
 const confirmar = (id: string) => {
-  const p = PEDIDOS_VENTA.get().find((x) => x.id === id);
+  const p = PEDIDOS_VENTA.get().find((x: PedidoVenta) => x.id === id);
   if (!p) return;
   Alert.alert('¿Entregaste el pedido?', `${p.titulo} a ${p.comprador}. El comprador recibe un aviso para calificarte.`, [
     { text: 'Todavía no', style: 'cancel' },

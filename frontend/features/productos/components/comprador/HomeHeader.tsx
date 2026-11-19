@@ -13,6 +13,8 @@ type Props = {
   entrega: string;
   /** Abre el menú lateral. La pantalla lo renderiza (vive en el módulo de cuenta). */
   onAbrirMenu: () => void;
+  /** Abre el selector de sede. Sin esta función, el botón lleva a la pestaña de tiendas. */
+  onCambiarSede?: () => void;
 };
 
 const irABuscar = () => router.push('/buscar');
@@ -22,7 +24,7 @@ const irASedes = () => router.navigate('/tiendas' as any);
  * Encabezado verde de Inicio: menú, buscador, notificaciones y la sede de entrega.
  * El menú lateral lo monta la pantalla de Inicio: las pantallas internas usan ScreenHeader.
  */
-function HomeHeaderBase({ sinLeer = 0, entrega, onAbrirMenu }: Props) {
+function HomeHeaderBase({ sinLeer = 0, entrega, onAbrirMenu, onCambiarSede }: Props) {
   const insets = useSafeAreaInsets();
   const verNotificaciones = useCallback(() => {
     router.push('/notificaciones' as any);
@@ -55,7 +57,7 @@ function HomeHeaderBase({ sinLeer = 0, entrega, onAbrirMenu }: Props) {
       </View>
 
       <Pressable
-        onPress={irASedes}
+        onPress={onCambiarSede ?? irASedes}
         accessibilityRole="button"
         accessibilityLabel={`Cambiar sede de entrega. Actual: ${entrega}`}
         style={s.sede}

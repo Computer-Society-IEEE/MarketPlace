@@ -6,7 +6,7 @@ export const useOfertas = (filtros: FiltrosOferta | string = {}) => {
   const f = typeof filtros === 'string' ? { texto: filtros } : filtros;
   const texto = (f.texto ?? '').trim().toLowerCase();
   return useQuery({
-    queryKey: ['ofertas', texto, f.tipo ?? null, f.categoria ?? null, !!f.soloDisponibles],
+    queryKey: ['ofertas', texto, f.tipo ?? null, f.categoria ?? null, !!f.soloDisponibles, f.sede ?? null, f.precioMin ?? null, f.precioMax ?? null, f.calificacionMin ?? null],
     queryFn: () => listarOfertas({ ...f, texto }),
     placeholderData: keepPreviousData,
   });

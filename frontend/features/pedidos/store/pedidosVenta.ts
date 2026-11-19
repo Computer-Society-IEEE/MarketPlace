@@ -23,3 +23,33 @@ export const PEDIDOS_VENTA = crearStore<PedidoVenta[]>([
   },
 ]);
 export const usePedidosVenta = PEDIDOS_VENTA.use;
+export const ANIO_ACTUAL = 2026;
+export const MES_ACTUAL = 'Octubre';
+
+/** Ventas de los dos meses anteriores, para la gráfica del trimestre. */
+export const VENTAS_MESES_ANTERIORES: { mes: string; total: number }[] = [
+  { mes: 'Agosto', total: 120000 },
+  { mes: 'Septiembre', total: 185000 },
+];
+
+/** Pedidos cancelados del mes. No suman a las ventas. */
+export const VENTAS_CANCELADAS: PedidoVenta[] = [
+  {
+    id: 'v2019', numero: 2019, titulo: 'Calculadora científica', comprador: 'Camila S.', chatId: 'camila',
+    detalle: 'Cancelado el 15 oct 2026', precio: 65000,
+  },
+];
+
+/** Total de los pedidos ya entregados. */
+export const sumaEntregados = (pedidos: PedidoVenta[]) =>
+  pedidos.reduce((n, p) => (p.entregado ? n + p.precio : n), 0);
+
+/** Marca el pedido como entregado. */
+export const confirmarEntrega = (id: string) =>
+  PEDIDOS_VENTA.set((l) =>
+    l.map((p) =>
+      p.id === id
+        ? { ...p, entregado: true, detalle: `Entregado el ${new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })}` }
+        : p
+    )
+  );
