@@ -11,7 +11,7 @@ import { FontFamily, Palette, Spacing, Type } from '@/constants/theme';
 import { PEDIDOS } from '@/features/pedidos/services/historial';
 
 const PASOS = ['Pedido recibido', 'En preparación', 'Listo para recoger', 'Entregado'] as const;
-const ACTUAL = { 'En preparación': 1, 'Listo para recoger': 2, Entregado: 3 } as const;
+const ACTUAL = { 'En preparación': 1, 'Listo para recoger': 2, 'Pago por confirmar': 3, Entregado: 3 } as const;
 const MOTIVOS = ['No coincide con la publicación', 'Llegó en mal estado', 'El vendedor no apareció'];
 
 /** Seguimiento de un pedido: línea de tiempo, datos de entrega y acciones (escribir, reportar, calificar). */

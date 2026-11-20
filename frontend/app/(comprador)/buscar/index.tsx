@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator,
+import {
   FlatList,
   ListRenderItem,
   Pressable,
@@ -7,13 +7,13 @@ import { ActivityIndicator,
   Switch,
   Text,
   TextInput,
-  View, } from 'react-native';
+  View,
+} from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { ActionButton } from '@/components/ui/ActionButton';
 import { FilterChip } from '@/components/ui/FilterChip';
 import { EstadoPantalla } from '@/components/ui/EstadoPantalla';
 import { EsqueletoProductos } from '@/components/ui/Esqueleto';
@@ -21,10 +21,9 @@ import { useConexion } from '@/utils/use-conexion';
 import { SEDES } from '@/features/sedes/services/sedes';
 import { ProductCard } from '@/features/productos/components/comprador/ProductCard';
 import { FiltrosAplicados, FiltrosBuscar, contarFiltros } from '@/features/productos/components/comprador/FiltrosBuscar';
-import { TipoOferta } from '@/utils/catalogo';
 import { FontFamily, Palette, Radius, Spacing, TouchMin, Type } from '@/constants/theme';
 import { useDebouncedValue } from '@/utils/use-debounced-value';
-import { Categoria } from '@/utils/catalogo';
+import { Categoria, TipoOferta } from '@/utils/catalogo';
 import { Oferta, aTarjeta } from '@/features/productos/services/ofertas';
 import { useOfertas } from '@/features/productos/hooks/useOfertas';
 
